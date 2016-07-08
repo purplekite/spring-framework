@@ -47,7 +47,7 @@ import org.springframework.core.Ordered;
  *     public CacheManager cacheManager() {
  *         // configure and return an implementation of Spring's CacheManager SPI
  *         SimpleCacheManager cacheManager = new SimpleCacheManager();
- *         cacheManager.addCaches(Arrays.asList(new ConcurrentMapCache("default")));
+ *         cacheManager.setCaches(Arrays.asList(new ConcurrentMapCache("default")));
  *         return cacheManager;
  *     }
  * }</pre>
@@ -99,7 +99,7 @@ import org.springframework.core.Ordered;
  * <p>For those that wish to establish a more direct relationship between
  * {@code @EnableCaching} and the exact cache manager bean to be used,
  * the {@link CachingConfigurer} callback interface may be implemented.
- * Notice the the {@code @Override}-annotated methods below:
+ * Notice the {@code @Override}-annotated methods below:
  *
  * <pre class="code">
  * &#064;Configuration
@@ -117,7 +117,7 @@ import org.springframework.core.Ordered;
  *     public CacheManager cacheManager() {
  *         // configure and return an implementation of Spring's CacheManager SPI
  *         SimpleCacheManager cacheManager = new SimpleCacheManager();
- *         cacheManager.addCaches(Arrays.asList(new ConcurrentMapCache("default")));
+ *         cacheManager.setCaches(Arrays.asList(new ConcurrentMapCache("default")));
  *         return cacheManager;
  *     }
  *

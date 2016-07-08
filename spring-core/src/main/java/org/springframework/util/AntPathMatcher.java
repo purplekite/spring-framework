@@ -83,13 +83,13 @@ public class AntPathMatcher implements PathMatcher {
 
 	private boolean caseSensitive = true;
 
-	private boolean trimTokens = true;
+	private boolean trimTokens = false;
 
 	private volatile Boolean cachePatterns;
 
-	private final Map<String, String[]> tokenizedPatternCache = new ConcurrentHashMap<String, String[]>(256);
+	private final Map<String, String[]> tokenizedPatternCache = new ConcurrentHashMap<>(256);
 
-	final Map<String, AntPathStringMatcher> stringMatcherCache = new ConcurrentHashMap<String, AntPathStringMatcher>(256);
+	final Map<String, AntPathStringMatcher> stringMatcherCache = new ConcurrentHashMap<>(256);
 
 
 	/**
@@ -314,37 +314,47 @@ public class AntPathMatcher implements PathMatcher {
 	}
 
 	private boolean isPotentialMatch(String path, String[] pattDirs) {
-		char[] pathChars = path.toCharArray();
-		int pos = 0;
-		for (String pattDir : pattDirs) {
-			int count = countStartsWith(pathChars, pos, this.pathSeparator, false);
-			pos += (count == this.pathSeparator.length() ? count : 0);
-			count = countStartsWith(pathChars, pos, pattDir, true);
-			if (count < pattDir.length()) {
-				if (count > 0) {
-					return true;
+		if (!this.trimTokens) {
+			char[] pathChars = path.toCharArray();
+			int pos = 0;
+			for (String pattDir : pattDirs) {
+				int skipped = skipSeparator(path, pos, this.pathSeparator);
+				pos += skipped;
+				skipped = skipSegment(pathChars, pos, pattDir);
+				if (skipped < pattDir.length()) {
+					if (skipped > 0) {
+						return true;
+					}
+					return (pattDir.length() > 0) && isWildcardChar(pattDir.charAt(0));
 				}
-				return (pattDir.length() > 0) && isWildcardChar(pattDir.charAt(0));
+				pos += skipped;
 			}
-			pos += count;
 		}
 		return true;
 	}
 
-	private int countStartsWith(char[] chars, int pos, String prefix, boolean stopOnWildcard) {
-		int count = 0;
+	private int skipSegment(char[] chars, int pos, String prefix) {
+		int skipped = 0;
 		for (char c : prefix.toCharArray()) {
-			if (stopOnWildcard && isWildcardChar(c)) {
-				return count;
+			if (isWildcardChar(c)) {
+				return skipped;
 			}
-			if (pos + count >= chars.length) {
+			else if (pos + skipped >= chars.length) {
 				return 0;
 			}
-			if (chars[pos + count] == c) {
-				count++;
+			else if (chars[pos + skipped] == c) {
+				skipped++;
 			}
 		}
-		return count;
+		return skipped;
+	}
+
+	private int skipSeparator(String path, int pos, String separator) {
+		int skipped = 0;
+		while (path.startsWith(separator, pos + skipped)) {
+			skipped += separator.length();
+		}
+		return skipped;
 	}
 
 	private boolean isWildcardChar(char c) {
@@ -477,7 +487,7 @@ public class AntPathMatcher implements PathMatcher {
 
 	@Override
 	public Map<String, String> extractUriTemplateVariables(String pattern, String path) {
-		Map<String, String> variables = new LinkedHashMap<String, String>();
+		Map<String, String> variables = new LinkedHashMap<>();
 		boolean result = doMatch(pattern, path, true, variables);
 		if (!result) {
 			throw new IllegalStateException("Pattern \"" + pattern + "\" is not a match for \"" + path + "\"");
@@ -613,7 +623,7 @@ public class AntPathMatcher implements PathMatcher {
 
 		private final Pattern pattern;
 
-		private final List<String> variableNames = new LinkedList<String>();
+		private final List<String> variableNames = new LinkedList<>();
 
 		public AntPathStringMatcher(String pattern) {
 			this(pattern, true);

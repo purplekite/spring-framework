@@ -145,7 +145,7 @@ public class MappingJackson2MessageConverter extends AbstractMessageConverter {
 		if (!logger.isWarnEnabled()) {
 			return this.objectMapper.canDeserialize(javaType);
 		}
-		AtomicReference<Throwable> causeRef = new AtomicReference<Throwable>();
+		AtomicReference<Throwable> causeRef = new AtomicReference<>();
 		if (this.objectMapper.canDeserialize(javaType, causeRef)) {
 			return true;
 		}
@@ -161,7 +161,7 @@ public class MappingJackson2MessageConverter extends AbstractMessageConverter {
 		if (!logger.isWarnEnabled()) {
 			return this.objectMapper.canSerialize(payload.getClass());
 		}
-		AtomicReference<Throwable> causeRef = new AtomicReference<Throwable>();
+		AtomicReference<Throwable> causeRef = new AtomicReference<>();
 		if (this.objectMapper.canSerialize(payload.getClass(), causeRef)) {
 			return true;
 		}
@@ -300,8 +300,8 @@ public class MappingJackson2MessageConverter extends AbstractMessageConverter {
 	 * @return the JSON encoding to use (never {@code null})
 	 */
 	protected JsonEncoding getJsonEncoding(MimeType contentType) {
-		if ((contentType != null) && (contentType.getCharSet() != null)) {
-			Charset charset = contentType.getCharSet();
+		if ((contentType != null) && (contentType.getCharset() != null)) {
+			Charset charset = contentType.getCharset();
 			for (JsonEncoding encoding : JsonEncoding.values()) {
 				if (charset.name().equals(encoding.getJavaName())) {
 					return encoding;

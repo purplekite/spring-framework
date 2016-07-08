@@ -110,7 +110,7 @@ public abstract class BeanUtils {
 
 	/**
 	 * Instantiate a class using its no-arg constructor and return the new instance
-	 * as the the specified assignable type.
+	 * as the specified assignable type.
 	 * <p>Useful in cases where
 	 * the type of the class to instantiate (clazz) is not available, but the type
 	 * desired (assignableTo) is known.
@@ -269,12 +269,12 @@ public abstract class BeanUtils {
 		int numMethodsFoundWithCurrentMinimumArgs = 0;
 		for (Method method : methods) {
 			if (method.getName().equals(methodName)) {
-				int numParams = method.getParameterTypes().length;
-				if (targetMethod == null || numParams < targetMethod.getParameterTypes().length) {
+				int numParams = method.getParameterCount();
+				if (targetMethod == null || numParams < targetMethod.getParameterCount()) {
 					targetMethod = method;
 					numMethodsFoundWithCurrentMinimumArgs = 1;
 				}
-				else if (!method.isBridge() && targetMethod.getParameterTypes().length == numParams) {
+				else if (!method.isBridge() && targetMethod.getParameterCount() == numParams) {
 					if (targetMethod.isBridge()) {
 						// Prefer regular method over bridge...
 						targetMethod = method;

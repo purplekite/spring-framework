@@ -29,6 +29,7 @@ import com.gargoylesoftware.htmlunit.WebResponse;
 import com.gargoylesoftware.htmlunit.WebResponseData;
 import com.gargoylesoftware.htmlunit.util.NameValuePair;
 
+import org.apache.http.impl.cookie.BasicClientCookie;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.util.Assert;
@@ -93,7 +94,7 @@ final class MockWebResponseBuilder {
 
 	private List<NameValuePair> responseHeaders() {
 		Collection<String> headerNames = this.response.getHeaderNames();
-		List<NameValuePair> responseHeaders = new ArrayList<NameValuePair>(headerNames.size());
+		List<NameValuePair> responseHeaders = new ArrayList<>(headerNames.size());
 		for (String headerName : headerNames) {
 			List<Object> headerValues = this.response.getHeaderValues(headerName);
 			for (Object value : headerValues) {
@@ -111,13 +112,23 @@ final class MockWebResponseBuilder {
 	}
 
 	private String valueOfCookie(Cookie cookie) {
+		return createCookie(cookie).toString();
+	}
+
+	static com.gargoylesoftware.htmlunit.util.Cookie createCookie(Cookie cookie) {
 		Date expires = null;
 		if (cookie.getMaxAge() > -1) {
 			expires = new Date(System.currentTimeMillis() + cookie.getMaxAge() * 1000);
 		}
-		return new com.gargoylesoftware.htmlunit.util.Cookie(
-				cookie.getDomain(), cookie.getName(), cookie.getValue(),
-				cookie.getPath(), expires, cookie.getSecure(), cookie.isHttpOnly()).toString();
+		BasicClientCookie result = new BasicClientCookie(cookie.getName(), cookie.getValue());
+		result.setDomain(cookie.getDomain());
+		result.setComment(cookie.getComment());
+		result.setExpiryDate(expires);
+		result.setPath(cookie.getPath());
+		result.setSecure(cookie.getSecure());
+		if(cookie.isHttpOnly()) {
+			result.setAttribute("httponly", "true");
+		}
+		return new com.gargoylesoftware.htmlunit.util.Cookie(result);
 	}
-
 }

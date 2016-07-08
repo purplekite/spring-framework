@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2015 the original author or authors.
+ * Copyright 2002-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,11 @@ package org.springframework.web.servlet.mvc.method;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.servlet.mvc.condition.ConsumesRequestCondition;
 import org.springframework.web.servlet.mvc.condition.HeadersRequestCondition;
 import org.springframework.web.servlet.mvc.condition.ParamsRequestCondition;
@@ -36,7 +35,7 @@ import org.springframework.web.servlet.mvc.condition.RequestMethodsRequestCondit
 import org.springframework.web.util.UrlPathHelper;
 
 /**
- * Encapsulates the following request mapping conditions:
+ * A {@link RequestCondition} that consists of the following other conditions:
  * <ol>
  * <li>{@link PatternsRequestCondition}
  * <li>{@link RequestMethodsRequestCondition}
@@ -240,7 +239,15 @@ public final class RequestMappingInfo implements RequestCondition<RequestMapping
 	 */
 	@Override
 	public int compareTo(RequestMappingInfo other, HttpServletRequest request) {
-		int result = this.patternsCondition.compareTo(other.getPatternsCondition(), request);
+		int result;
+		// Automatic vs explicit HTTP HEAD mapping
+		if (HttpMethod.HEAD.matches(request.getMethod())) {
+			result = this.methodsCondition.compareTo(other.getMethodsCondition(), request);
+			if (result != 0) {
+				return result;
+			}
+		}
+		result = this.patternsCondition.compareTo(other.getPatternsCondition(), request);
 		if (result != 0) {
 			return result;
 		}
@@ -260,6 +267,7 @@ public final class RequestMappingInfo implements RequestCondition<RequestMapping
 		if (result != 0) {
 			return result;
 		}
+		// Implicit (no method) vs explicit HTTP method mappings
 		result = this.methodsCondition.compareTo(other.getMethodsCondition(), request);
 		if (result != 0) {
 			return result;

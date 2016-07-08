@@ -856,7 +856,7 @@ public class ConfigurationClassPostProcessorTests {
 
 		@Bean
 		public Repository<Object> genericRepo() {
-			return new GenericRepository<Object>();
+			return new GenericRepository<>();
 		}
 	}
 
@@ -918,12 +918,12 @@ public class ConfigurationClassPostProcessorTests {
 
 		@Bean
 		public Repository<? extends String> stringRepo() {
-			return new Repository<String>();
+			return new Repository<>();
 		}
 
 		@Bean
 		public Repository<? extends Number> numberRepo() {
-			return new Repository<Number>();
+			return new Repository<>();
 		}
 
 		@Bean
@@ -942,7 +942,7 @@ public class ConfigurationClassPostProcessorTests {
 
 		@Bean
 		public Repository<? extends Number> numberRepo() {
-			return new Repository<Number>();
+			return new Repository<>();
 		}
 
 		@Bean
@@ -1063,17 +1063,27 @@ public class ConfigurationClassPostProcessorTests {
 		}
 	}
 
-	public interface DefaultMethodsConfig {
+	public interface BaseInterface {
 
-		@Bean
-		default ServiceBean serviceBean() {
-			return provider().getServiceBean();
-		}
+		ServiceBean serviceBean();
+	}
+
+	public interface BaseDefaultMethods extends BaseInterface {
 
 		@Bean
 		default ServiceBeanProvider provider() {
 			return new ServiceBeanProvider();
 		}
+
+		@Bean
+		@Override
+		default ServiceBean serviceBean() {
+			return provider().getServiceBean();
+		}
+	}
+
+	public interface DefaultMethodsConfig extends BaseDefaultMethods {
+
 	}
 
 	@Configuration

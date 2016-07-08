@@ -38,18 +38,18 @@ import org.springframework.util.ReflectionUtils;
  *
  * <ul>
  * <li>{@link #beforeTestClass() before test class execution}: prior to any
- * <em>before class methods</em> of a particular testing framework (e.g., JUnit
- * 4's {@link org.junit.BeforeClass @BeforeClass})</li>
+ * <em>before class callbacks</em> of a particular testing framework (e.g.,
+ * JUnit 4's {@link org.junit.BeforeClass @BeforeClass})</li>
  * <li>{@link #prepareTestInstance(Object) test instance preparation}:
  * immediately following instantiation of the test instance</li>
  * <li>{@link #beforeTestMethod(Object, Method) before test method execution}:
- * prior to any <em>before methods</em> of a particular testing framework (e.g.,
- * JUnit 4's {@link org.junit.Before @Before})</li>
+ * prior to any <em>before method callbacks</em> of a particular testing framework
+ * (e.g., JUnit 4's {@link org.junit.Before @Before})</li>
  * <li>{@link #afterTestMethod(Object, Method, Throwable) after test method
- * execution}: after any <em>after methods</em> of a particular testing
+ * execution}: after any <em>after method callbacks</em> of a particular testing
  * framework (e.g., JUnit 4's {@link org.junit.After @After})</li>
  * <li>{@link #afterTestClass() after test class execution}: after any
- * <em>after class methods</em> of a particular testing framework (e.g., JUnit
+ * <em>after class callbacks</em> of a particular testing framework (e.g., JUnit
  * 4's {@link org.junit.AfterClass @AfterClass})</li>
  * </ul>
  *
@@ -86,7 +86,7 @@ public class TestContextManager {
 
 	private final TestContext testContext;
 
-	private final List<TestExecutionListener> testExecutionListeners = new ArrayList<TestExecutionListener>();
+	private final List<TestExecutionListener> testExecutionListeners = new ArrayList<>();
 
 
 	/**
@@ -165,7 +165,7 @@ public class TestContextManager {
 	 * registered for this {@code TestContextManager} in reverse order.
 	 */
 	private List<TestExecutionListener> getReversedTestExecutionListeners() {
-		List<TestExecutionListener> listenersReversed = new ArrayList<TestExecutionListener>(getTestExecutionListeners());
+		List<TestExecutionListener> listenersReversed = new ArrayList<>(getTestExecutionListeners());
 		Collections.reverse(listenersReversed);
 		return listenersReversed;
 	}

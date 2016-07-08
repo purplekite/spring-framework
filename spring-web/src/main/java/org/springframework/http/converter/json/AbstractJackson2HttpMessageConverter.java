@@ -145,7 +145,7 @@ public abstract class AbstractJackson2HttpMessageConverter extends AbstractGener
 		if (!logger.isWarnEnabled()) {
 			return this.objectMapper.canDeserialize(javaType);
 		}
-		AtomicReference<Throwable> causeRef = new AtomicReference<Throwable>();
+		AtomicReference<Throwable> causeRef = new AtomicReference<>();
 		if (this.objectMapper.canDeserialize(javaType, causeRef)) {
 			return true;
 		}
@@ -161,7 +161,7 @@ public abstract class AbstractJackson2HttpMessageConverter extends AbstractGener
 		if (!logger.isWarnEnabled()) {
 			return this.objectMapper.canSerialize(clazz);
 		}
-		AtomicReference<Throwable> causeRef = new AtomicReference<Throwable>();
+		AtomicReference<Throwable> causeRef = new AtomicReference<>();
 		if (this.objectMapper.canSerialize(clazz, causeRef)) {
 			return true;
 		}
@@ -348,8 +348,8 @@ public abstract class AbstractJackson2HttpMessageConverter extends AbstractGener
 	 * @return the JSON encoding to use (never {@code null})
 	 */
 	protected JsonEncoding getJsonEncoding(MediaType contentType) {
-		if (contentType != null && contentType.getCharSet() != null) {
-			Charset charset = contentType.getCharSet();
+		if (contentType != null && contentType.getCharset() != null) {
+			Charset charset = contentType.getCharset();
 			for (JsonEncoding encoding : JsonEncoding.values()) {
 				if (charset.name().equals(encoding.getJavaName())) {
 					return encoding;
